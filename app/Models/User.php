@@ -1,5 +1,7 @@
 <?php
 namespace App\Models;
+use App\Enums\RoleEnum;
+use App\Enums\StatusEnum;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -18,6 +20,8 @@ class User extends Authenticatable implements JWTSubject
         'userName',
         'email',
         'password',
+        'status',
+        'role'
     ];
     /**
      * The attributes that should be hidden for arrays.
@@ -35,6 +39,8 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'status' => StatusEnum::class,
+        'role' => RoleEnum::class
     ];
     
     /**

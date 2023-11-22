@@ -40,7 +40,7 @@ class Handler extends ExceptionHandler
                 return response()->json([
                     'message' => $e->getMessage(),
                     'status_code' => $e->getCode(),
-                    'trace' => $e->getTrace(),
+                    //'trace' => $e->getTrace(),
                 ], 404);
             }
         });       
