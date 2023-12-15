@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use Illuminate\Http\RedirectResponse;
 use Storage;
 use Illuminate\Http\UploadedFile;
 use App\Enums\RoleEnum;
@@ -111,49 +112,29 @@ class AuthController extends Controller
         ]);
     }
 
-    function getClientOriginalExtension($name) {
-        $exts=explode($name,'.');
-        return $exts[count($exts)-1];
-    }
-    function getClientOriginalName($name,$ext) {
-        return str_replace(".".$ext,"",$name);
-    }
-    public function upload(Request $request)
+    public function store(Request $request)
     {
-        $uploadedFiles=[];
-        if(!$request->hasFile('fileName')) {
-            return response()->json(['upload_file_not_found'], 400);
+        $msg='';
+        $id=0;
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+        
+        $name = rand(000000,999999).'_'.time();  
+        $imageName = $name.'.'.$request->image->extension(); 
+         
+        $request->image->move(public_path('images'), $imageName);
+      
+        $save = new Image();
+        $save->title = $name;
+        $save->path = $imageName;
+        if($save->save()){
+            $msg='File saved successfully';
+            $id=$save->id;
         }
-        //array_push($uploadedFiles,storage_path('/app/public/images/'));
-        $allowedfileExtension=['pdf','jpg','png','jpeg','webp'];
-        $files = $_FILES; 
-        $errors = [];
-        foreach($files as $key => $file) {
-       //array_push($uploadedFiles,$key);
-            $extension = strtolower($this->getClientOriginalExtension($file['name']));
-            //array_push($uploadedFiles,$extension);
-            $check = in_array($extension,$allowedfileExtension);
-            if($check) {
-                $name = $this->getClientOriginalName($file['name'],$extension);
-                $newFileName=$name.'-'+rand(000000,999999).'-'.strtotime('now').'.'.$extension;
-                $path = 'public/images/'.$newFileName;
-                array_push($uploadedFiles,Storage::move($_FILES[$key]['tmp_name'],storage_path('/').$newFileName));
-                Storage::files($path)->put(storage_path('/'.$newFileName),$file);
-                /*print_r(move_uploaded_file($_FILES[$key]['tmp_name'],storage_path('/').$newFileName));
-                if(move_uploaded_file($_FILES[$key]['tmp_name'],$path)){
-                    //store image file into directory and db
-                    $save = new Image();
-                    $save->title = $name;
-                    $save->path = $newFileName;
-                    if($save->save()){
-                        array_push($uploadedFiles,$path);
-                    }
-                    else {
-                        rmdir($path);
-                    }
-                }*/                    
-            }            
+        else{
+            $msg='File not saved';
         }
-        return response()->json(['totalFiles' => $uploadedFiles], 200);
+        return response()->json(['message' =>  $msg,'image_id' =>  $id], 200);
     }
 }
