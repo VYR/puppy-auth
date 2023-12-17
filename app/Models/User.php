@@ -2,6 +2,7 @@
 namespace App\Models;
 use App\Enums\RoleEnum;
 use App\Enums\StatusEnum;
+use App\Enums\UserTypeEnum;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -18,9 +19,17 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $fillable = [
         'userName',
+        'firstName',
+        'lastName',
+        'mobilePhone',
+        'userType',
+        'userId',
+        'introducedBy',
         'email',
         'password',
         'status',
+        'aadhar',
+        'pan',
         'role'
     ];
     /**
@@ -40,7 +49,8 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
         'status' => StatusEnum::class,
-        'role' => RoleEnum::class
+        'role' => RoleEnum::class,
+        'userType' => UserTypeEnum::class
     ];
     
     /**

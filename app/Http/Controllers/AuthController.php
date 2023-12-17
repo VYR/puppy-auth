@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use App\Enums\UserTypeEnum;
 use Illuminate\Http\RedirectResponse;
 use Storage;
 use Illuminate\Http\UploadedFile;
@@ -47,16 +48,25 @@ class AuthController extends Controller
      */
     public function register(Request $request) {
         $validator = Validator::make($request->all(), [
-            'userName' => 'required|string|between:2,100',
+            'firstName' => 'required|string|between:2,100',
+            'lastName' => 'required|string|between:2,100',
+            'mobilePhone' => 'required|string|min:10',
             'role' => [new Enum(RoleEnum::class)],
+            'userType' => [new Enum(UserTypeEnum::class)],
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|min:6',
+            'aadhar' => 'required|string|min:12',
+            'pan' => 'required|string|min:10',
+            'introducedBy' => 'required|string|min:9',
         ]);
         if($validator->fails()){
             return response()->json($validator->errors()->toJson(), 400);
         }
+        $data=$validator->validated();
+        $data['userId']='SGS'.random_int(100000, 999999);
+        $data['userName']=$data['firstName'].' '.$data['lastName'];
         $user = User::create(array_merge(
-                    $validator->validated(),
+                    $data,
                     ['password' => bcrypt($request->password)]
                 ));
         return response()->json([
