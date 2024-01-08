@@ -1,8 +1,12 @@
 <?php
   
 namespace App\Enums;
- enum UserTypeEnum:int {
+use App\Traits\{EnumOptions,EnumValues};
+ enum UserTypeEnum:int {    
+    use EnumValues;
+    use EnumOptions;
     case Admin = 1;
-    case User = 0;
-    case Dealer = 2;
-}
+    case SchemeMember = 0;
+    case Promoter = 2;
+    case Employee = 3;
+ }

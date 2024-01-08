@@ -1,8 +1,12 @@
 <?php
   
 namespace App\Enums;
+use App\Traits\{EnumOptions,EnumValues};
  enum RoleEnum:string {
-    case Admin = 'admin';
-    case User = 'user';
-    case Dealer = 'dealer';
+    use EnumValues;
+    use EnumOptions;
+    case Admin = 'Admin';
+    case SchemeMember = 'Scheme Member';
+    case Promoter = 'Promoter';
+    case Employee = 'Employee';
 }
